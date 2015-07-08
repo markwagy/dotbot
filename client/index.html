@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>connect the dot bot</title>
+
+    <!-- libraries -->
+
+    <script type="text/javascript" src="js/lib/Three.js"></script>
+    <script type="text/javascript" src="js/lib/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/remove.d3.lib.conflict.js"></script>
+    <script type="text/javascript" src="js/lib/ammo.js"></script>  
+
+    <script type="text/javascript" src="js/lib/jquery.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="js/lib/ShapeDrawer.js"></script>
+    <script type="text/javascript" src="js/lib/SceneJS_ShapeDrawer.js"></script>
+    <script type="text/javascript" src="js/lib/DemoApplication.js"></script>
+    <script type="text/javascript" src="js/lib/scenejs.js"></script>
+    
+    <!-- my js -->
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/robot.js"></script>
+    <script type="text/javascript" src="js/design.js"></script>
+    <script type="text/javascript" src="js/simulation.js"></script>
+    <script type="text/javascript" src="js/palette.js"></script>
+    <script type="text/javascript" src="js/ui.js"></script>
+
+    <!-- config -->
+    <script type="text/javascript" src="resources/config.json"></script>
+
+    <!-- stylesheets -->
+    <link rel="stylesheet" media="screen" href="style/client.css" />
+
+  </head>
+  <body>
+
+
+
+<!--[if IE]>
+<script>
+    alert("It looks like you are using the Internet Explorer web browser. IE is unpredictable, so this page may not work. Try downloading the Chrome or Firefox browser instead.");
+</script>
+<![endif]-->
+
+<div id="top">
+  <script>
+    var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+
+    if (isSafari) {
+       $("#top").append('<p style="color:red; font-size:15pt;">I see you are using Safari. <br> You may need to download <a href="http://www.webkit.org/">Safari WebKit</a> for this page to work.</p><hr>');
+    }
+  </script>
+    <!-- information panel -->
+    <div id="info">
+      <p style="font-size: 20pt;">Try to design a robot that moves farther!
+      <p style="margin-top: 10px;"> <b>Connect the dots with your mouse</b> to draw a robot then <b>click GO</b>.
+	<p>If you run the same robot design multiple times, it will learn new behaviors.</p>
+    </div>
+    <hr>
+      <p id="history_text">
+    <!-- history panel -->
+    <div id="history"></div>
+    <hr>
+    <script>
+      var historyPanel = new HistoryPanel(Config);
+      historyPanel.draw();
+    </script>
+</div> <!-- end top -->
+
+<div id="mid">
+    <div> 
+      <div id="distanceDisplay"><b>Current distance</b> (from red ball): <i>(you need to draw a robot first!)</i></div>
+      <div id="timeDisplay"><b>Time left</b>: <i>(you need to hit go after drawing your robot!)</i></div>
+    </div>
+
+    <!-- simulation panel -->
+
+    <span id="simulation_panel">
+      <canvas id="simulation"></canvas>
+    </span>
+
+    <script>
+
+      SceneJS._scenes = [];
+      var s = new SceneJS_ShapeDrawer({canvasId:"simulation"});
+      var demoApp = new MyDemoApplication({shapeDrawer:s});
+      demoApp.setDistanceDisplayDOMElement("#distanceDisplay");
+      demoApp.setTimeDisplayDOMElement("#timeDisplay");
+      demoApp.setDistanceIndicatorDOMElement(".historical_distance");
+      demoApp.setConfig(Config);
+      demoApp.setRunTime(Config.run_time);
+      demoApp.setAppVersion(Config.app_version);
+      demoApp.setConfigSendLocation(Config.send_configs_base_url);
+      // the simulation needs to know about the history panel so that it can redraw
+      // the history panel when the simulation is done
+      demoApp.setHistoryPanel(historyPanel);
+    </script>
+
+    <!-- design panel -->
+    <span id="design"></span>
+
+    <script>
+
+      var robotPalette = new RobotPalette(true, "span#design", Config.design_dim, Config);
+      robotPalette.draw();
+
+      function load() {
+
+      SceneJS._scenes = [];
+      demoApp.resetWorld();
+
+          var A = robotPalette.adjacencyMatrixFromSVGDrawing();
+          var N = robotPalette.getN();
+          var M = robotPalette.getM();
+          var dataJSON = {
+            "adjacency_matrix": adjMatToDBString(A),
+            "N": N,
+            "M": M
+          };
+
+          $.ajax({
+            type: "POST",
+            url: Config.get_phases_url,
+            data: dataJSON,
+            success: function(data) {
+               phases = data.phases
+               demoApp.initRobot(A, robotPalette.getN(), robotPalette.getM(), phases);
+               console.log(demoApp.robot.getPhases());
+               console.log("loaded");
+               demoApp.addRobotToWorld();
+            },
+            dataType: "json"
+          });
+          console.log("loading...");
+      }
+
+      function go() {
+          historyPanel.redraw();
+          load();
+      }
+
+
+      function reset() {
+       $("span#design svg").remove();
+       var robotPalette = new RobotPalette(true, "span#design", Config.design_dim, Config);
+       robotPalette.draw();
+     }
+
+    </script>
+
+</div> <!-- end mid -->
+
+<div id="bottom">
+
+    <!-- controls -->
+    <span id="controls">
+      controls:
+      <span class="button go" onclick="go();">GO</span>
+      <span class="button reset" onClick='reset()'>reset</span>
+    </span>
+
+    <span id="winner">
+      <p></p>
+    </span>
+    <div class="helptext">
+      mouse: rotate scene; z: zoom in; x: zoom out
+    </div>
+</div> <!-- end bottom -->
+
+  </body>
+</html>

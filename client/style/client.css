@@ -1,0 +1,152 @@
+
+* {
+    margin: 0;
+    font-family: "Courier New", Courier, monospace;
+    color: black;
+}
+
+div#top {
+/*    position: fixed; */
+    padding: 10px;
+}
+
+div#mid {
+/*    position: fixed; */
+
+}
+
+div#bottom {
+/*    position: absolute; */
+}
+
+#simulation_panel, #simulation {
+    margin: 3px;
+    height: 400px;
+    width: 400px;
+/*    position: fixed; */
+}
+
+#design {
+/*    height: 400px;*/
+/*    width: 400px;*/
+/*    border: 2px dotted lightgreen;  */
+/*    position: fixed; */
+    left: 400px;
+    margin-left: 7px;
+    
+    position: absolute;
+}
+
+/* hudCanvas is something defined by some of the ammo.js code somewhere */
+#hudCanvas {
+    width: 0px;
+    height: 0px;
+}
+
+#history {
+    height: 100px;
+    margin: 5px;
+}
+
+#history_text {
+    margin: 10px;
+}
+
+#distanceDisplay {
+    padding: 4px;
+}
+
+#distNum {
+    background-color: pink;
+    border: 1px solid black;
+}
+
+#timeDisplay {
+    padding: 4px;
+}
+
+#info {
+/*    border: 2px dotted magenta; */
+/*    background: #eff; */
+    color: black;
+    padding: 10px;
+}
+
+#winner {
+    border: 0px solid #e77;
+    position: absolute;
+    padding: 10px;
+    left: 550px;
+}
+
+.helptext {
+    font-style: italic;
+    font-size: 10pt;
+    margin: 20px;
+}
+
+#controls {
+    padding: 20px;
+    background: #eee; 
+    color: black;
+}
+
+/*
+#historyBox {
+    position: fixed;
+    border: 1px solid blue;
+    background: yellow;
+    margin-bottom: 20px;
+}
+*/
+
+.historical_design {
+/*    display: block; */
+/*    position: relative; */
+    margin: 1px;
+    position: absolute;
+}
+
+.historical_distance {
+/*    position: relative; */
+    background: white;
+    border: 1px solid black;
+    z-index: 40;
+    font-size: 8pt;
+    padding: 2px;
+    position: absolute;
+}
+
+.button {
+    background: gray;
+    padding: 10px;
+    font-size: 20pt;
+    border: 3px outset black;
+    border-radius: 20px;
+    color: white;
+}
+
+.button:active {
+    border: 3px inset black;
+}
+
+.go {
+    background: green;
+}
+
+.reset:hover {
+    background: lightgray;
+}
+
+.reset:active {
+    background: darkgray;
+}
+
+.go:hover {
+    background: lightgreen;
+}
+
+.go:active {
+    background: darkgreen;
+}
+
